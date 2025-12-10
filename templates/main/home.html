@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<h2>Home</h2>
+
+<section class="post-form">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit">Post</button>
+  </form>
+</section>
+
+<hr />
+
+{% for post in posts %}
+<article class="post">
+  <p>
+    <strong
+      ><a href="{% url 'profile' post.author.username %}"
+        >{{ post.author.username }}</a
+      ></strong
+    >
+    · {{ post.created_at|date:"M d, Y H:i" }}
+  </p>
+  <div class="post-content">{{ post.content|linebreaks }}</div>
+  {% if post.image %}
+  <div><img src="{{ post.image.url }}" style="max-width: 400px" /></div>
+  {% endif %}
+  <p>
+    {{ post.total_likes }} likes •
+    <a href="{% url 'like_toggle' post.id %}">Like/Unlike</a>
+  </p>
+</article>
+<hr />
+{% empty %}
+<p>No posts yet.</p>
+{% endfor %} {% endblock %}

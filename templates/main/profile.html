@@ -1,0 +1,29 @@
+{% extends 'base.html' %} {% block content %}
+<h2>{{ profile_user.username }}</h2>
+<p>{{ profile_user.profile.bio }}</p>
+{% if profile_user.profile.avatar %}
+<img src="{{ profile_user.profile.avatar.url }}" width="120" alt="avatar" />
+{% endif %} {% if user.is_authenticated and user.username !=
+profile_user.username %}
+<form action="{% url 'follow_toggle' profile_user.username %}" method="post">
+  {% csrf_token %}
+  <button type="submit">
+    {% if is_following %}Unfollow{% else %}Follow{% endif %}
+  </button>
+</form>
+{% endif %}
+
+<hr />
+<h3>Posts</h3>
+{% for post in posts %}
+<div class="profile-post">
+  <p>{{ post.created_at|date:"M d, Y H:i" }}</p>
+  <p>{{ post.content }}</p>
+  {% if post.image %}
+  <img src="{{ post.image.url }}" style="max-width: 300px" />
+  {% endif %}
+</div>
+<hr />
+{% empty %}
+<p>No posts yet.</p>
+{% endfor %} {% endblock %}
