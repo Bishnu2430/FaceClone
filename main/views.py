@@ -2,11 +2,11 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Post, Follow
-from .forms import PostForm, UserRegisterForm
+from .forms import PostForm, UserRegisterForm, ProfileForm
 
 def register(request):
     if request.method == 'POST':
@@ -72,3 +72,23 @@ def like_toggle(request, post_id):
     else:
         post.likes.add(request.user)
     return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def edit_profile(request):
+    profile = request.user.profile
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', username=request.user.username)
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'main/edit_profile.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+

@@ -1,35 +1,58 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
-<h2>Home</h2>
+{% extends 'base.html' %} {% block content %}
 
-<section class="post-form">
+<!-- Create Post -->
+<div id="create-post" class="card p-3 mb-4">
   <form method="post" enctype="multipart/form-data">
-    {% csrf_token %} {{ form.as_p }}
-    <button type="submit">Post</button>
+    {% csrf_token %}
+    <h5 class="mb-3">Create Post</h5>
+    {{ form.as_p }}
+    <button class="btn btn-primary">Post</button>
   </form>
-</section>
+</div>
 
-<hr />
-
+<!-- Posts -->
 {% for post in posts %}
-<article class="post">
-  <p>
-    <strong
-      ><a href="{% url 'profile' post.author.username %}"
-        >{{ post.author.username }}</a
-      ></strong
-    >
-    · {{ post.created_at|date:"M d, Y H:i" }}
-  </p>
-  <div class="post-content">{{ post.content|linebreaks }}</div>
+<div class="card p-3 mb-3">
+  <div class="d-flex align-items-center mb-2">
+    <strong>
+      <a href="{% url 'profile' post.author.username %}" class="text-dark">
+        {{ post.author.username }}
+      </a>
+    </strong>
+    <span class="text-muted ms-2" style="font-size: 14px">
+      {{ post.created_at|date:"M d, Y H:i" }}
+    </span>
+  </div>
+
+  <p>{{ post.content }}</p>
+
   {% if post.image %}
-  <div><img src="{{ post.image.url }}" style="max-width: 400px" /></div>
+  <img src="{{ post.image.url }}" class="img-fluid rounded mb-2" />
   {% endif %}
-  <p>
-    {{ post.total_likes }} likes •
-    <a href="{% url 'like_toggle' post.id %}">Like/Unlike</a>
-  </p>
-</article>
-<hr />
+
+  <a href="{% url 'like_toggle' post.id %}" class="text-decoration-none">
+    ❤️ {{ post.total_likes }} Like{{ post.total_likes|pluralize }}
+  </a>
+</div>
 {% empty %}
-<p>No posts yet.</p>
+<div class="card p-3 mb-3">
+  <div class="d-flex align-items-center mb-2">
+    <strong>Community</strong>
+    <span class="text-muted ms-2" style="font-size: 14px">Dec 10, 2025</span>
+  </div>
+  <p>
+    Welcome to FaceClone — this is a sample post. Create your own post using the
+    form above.
+  </p>
+</div>
+
+<div class="card p-3 mb-3">
+  <div class="d-flex align-items-center mb-2">
+    <strong>Team</strong>
+    <span class="text-muted ms-2" style="font-size: 14px">Dec 9, 2025</span>
+  </div>
+  <p>
+    Check out the features: follow users, like posts, and edit your profile.
+  </p>
+</div>
 {% endfor %} {% endblock %}
